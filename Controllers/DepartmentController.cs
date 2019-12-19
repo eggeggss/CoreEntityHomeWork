@@ -13,6 +13,7 @@ using webapi01.Meta;
 namespace webapi01.Controllers
 {
     [Route("api/[controller]")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     [ApiController]
     public class DepartmentController : ControllerBase
     {
@@ -27,6 +28,9 @@ namespace webapi01.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Department>>> GetDepartment()
         {
+
+            throw new Exception("test");
+
             return await _context.Department
                 .Where(e=>e.IsDeleted==0)
                 .ToListAsync();
@@ -34,6 +38,9 @@ namespace webapi01.Controllers
 
         // GET: api/Department/5
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<Department>> GetDepartment(int id)
         {
             //var department = await _context.Department.FindAsync(id);
@@ -53,6 +60,10 @@ namespace webapi01.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> PutDepartment(int id, Department department)
         {
             if (id != department.DepartmentId)
@@ -85,6 +96,8 @@ namespace webapi01.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<Department>> PostDepartment(Department department)
         {
             _context.Department.Add(department);
@@ -95,6 +108,9 @@ namespace webapi01.Controllers
 
         // DELETE: api/Department/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<Department>> DeleteDepartment(int id)
         {
             //var department = await _context.Department.FindAsync(id);
@@ -119,6 +135,9 @@ namespace webapi01.Controllers
         /// <param name="obj"></param>
         /// <returns></returns>
         [HttpPost("sp_update")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> UpdateDepartment(UpdateObj obj)
         {
             try
@@ -158,6 +177,9 @@ namespace webapi01.Controllers
         /// <param name="obj"></param>
         /// <returns></returns>
         [HttpPut("sp_insert")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> InsertDepartment(InsertObj obj)
         {
 
@@ -199,6 +221,8 @@ namespace webapi01.Controllers
         /// <param name="obj"></param>
         /// <returns></returns
         [HttpDelete("sp_delete")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> DeleteDepartment(DeleteObj obj)
         {
             var result =await this

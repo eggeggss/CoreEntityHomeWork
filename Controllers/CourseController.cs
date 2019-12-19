@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using webapi01.Meta;
 using webapi01.Models;
 
 namespace webapi01.Controllers
 {
     [Route("api/[controller]")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     [ApiController]
     public class CourseController : ControllerBase
     {
@@ -77,6 +79,45 @@ namespace webapi01.Controllers
             return NoContent();
         }
 
+        [HttpPatch("patch/{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> PatchCourse(int id, PatchCourse course)
+        {
+            var findcouse=await this._context.Course.FindAsync(id);
+
+            findcouse.Credits = course.Credits;
+            findcouse.Title = course.Title;
+
+            if (!TryValidateModel(findcouse))
+            {
+                return BadRequest();
+            }
+
+            //_context.Entry(findcouse).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CourseExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+
         // POST: api/Course
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
@@ -86,7 +127,9 @@ namespace webapi01.Controllers
             _context.Course.Add(course);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCourse", new { id = course.CourseId }, course);
+            return CreatedAtAction(nameof(GetCourse), new { id = course.CourseId }, course);
+
+            //return CreatedAtAction("GetCourse", new { id = course.CourseId }, course);
         }
 
         // DELETE: api/Course/5
@@ -108,6 +151,9 @@ namespace webapi01.Controllers
 
             return course;
         }
+
+        
+
 
         private bool CourseExists(int id)
         {

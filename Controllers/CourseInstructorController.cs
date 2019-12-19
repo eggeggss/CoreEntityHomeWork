@@ -10,6 +10,7 @@ using webapi01.Models;
 namespace webapi01.Controllers
 {
     [Route("api/[controller]")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     [ApiController]
     public class CourseInstructorController : ControllerBase
     {
